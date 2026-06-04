@@ -29,7 +29,7 @@ npm run dev
 
 #### TC-01: Index Prices Endpoint
 - **Action**: `GET /api/indices`
-- **Expected**: JSON with 5 index entries (Gift Nifty, Nifty 50, Next 50, Midcap 100, Smallcap 100)
+- **Expected**: JSON with 5 index entries (Gift Nifty, Nifty 50, Next 50, Midcap 100, Nifty SML 100)
 - **Validation**: Each entry has `price`, `change`, `changePercent` fields
 - **Status**: ✅
 
@@ -116,7 +116,22 @@ npm run dev
 - **Expected**: Starred stock remains in Favourites section after reload
 - **Status**: ✅
 
-#### TC-18: Responsive Layout
+#### TC-18: 1Y Momentum Bar
+- **Action**: Observe rightmost column "1Y Momentum"
+- **Expected**: Each row shows a filled range bar from 52W Low to 52W High with a colored fill (green/amber/red) proportional to current price position, plus percentage label
+- **Status**: ✅
+
+#### TC-19: Symbol Tooltip
+- **Action**: Hover mouse over any stock symbol
+- **Expected**: Native browser tooltip shows the full company name
+- **Status**: ✅
+
+#### TC-20: Vertical Column Separator
+- **Action**: Examine column headers and rows between Day Low and 52W High
+- **Expected**: A vertical 2px line separates the Day High/Low group from the 52W High/Low group
+- **Status**: ✅
+
+#### TC-21: Responsive Layout
 - **Action**: Resize browser window
 - **Expected**: Cards reflow (5→3→2 columns), table scrolls horizontally
 - **Status**: ✅

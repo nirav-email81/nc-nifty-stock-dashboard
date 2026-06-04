@@ -73,7 +73,7 @@ VITE v5.4.21  ready in 2s
 - You should see:
   - 5 index cards at the top (Gift Nifty, Nifty 50, etc.)
   - A table of stocks with prices, PE ratios, and more
-  - Filter buttons (Nifty 50, Next 50, Midcap, Smallcap)
+  - Filter buttons (Nifty 50, Next 50, Midcap, SML)
   - A search box to find stocks by name
 
 ## How to Use

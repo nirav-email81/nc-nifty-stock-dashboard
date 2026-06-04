@@ -6,7 +6,7 @@ Build a real-time Nifty Stock Dashboard web application with a React + Vite fron
    - https://archives.nSEIndia.com/content/indices/ind_niftynext50list.csv
    - https://archives.nSEIndia.com/content/indices/ind_niftymidcap100list.csv
    - https://archives.nSEIndia.com/content/indices/ind_niftysmallcap100list.csv
-2. **Index Prices**: Use yfinance for Nifty 50 (^NSEI), Nifty Next 50 (^NSMIDCP), Nifty Midcap 100 (NIFTY_MIDCAP_100.NS), Nifty Smallcap 100 (^CNXSC)
+2. **Index Prices**: Use yfinance for Nifty 50 (^NSEI), Nifty Next 50 (^NSMIDCP), Nifty Midcap 100 (NIFTY_MIDCAP_100.NS), Nifty SML 100 (^CNXSC)
 3. **Gift Nifty**: Fetch from https://www.NSEIndia.com/api/marketStatus
 4. **Stock Prices**: Batch download via yfinance.download() in batches of ~50 with .NS suffix
 5. **Fundamentals**: Fetch per-stock via yfinance.Ticker.info for PE, PB, EPS, Div%, 52W High/Low, company name
@@ -30,14 +30,16 @@ Build a real-time Nifty Stock Dashboard web application with a React + Vite fron
 
 ### Components
 1. **App.jsx**: Manages state (indices, stocks, dark mode, starred, clock, loading, error), polling intervals, localStorage for favourites
-2. **IndexCards.jsx**: 5 cards in responsive grid showing Gift Nifty, Nifty 50, Next 50, Midcap 100, Smallcap 100 with price, change, changePercent
+2. **IndexCards.jsx**: 5 cards in responsive grid showing Gift Nifty, Nifty 50, Next 50, Midcap 100, Nifty SML 100 with price, change, changePercent
 3. **StockTable.jsx**: All features below
 
 ### StockTable Features
-- Bucket filter pills: All, Nifty 50, Nifty Next 50, Nifty Midcap, Nifty Smallcap
+- Bucket filter pills: All, Nifty 50, Nifty Next 50, Nifty Midcap, Nifty SML
 - Text search box filtering by symbol or name
 - Sortable columns with asc/desc toggle on click
-- Columns in order: Star, Symbol, Index, Price, Face Value, Day High, Day Low, 52W High, 52W Low, EPS, Div%, P/E, P/B
+- Columns in order: Star, Symbol, Index, Price, Face Value (split 2-line header), Day High, Day Low, | 52W High, 52W Low, EPS, Div%, P/E, P/B, 1Y Momentum
+- **1Y Momentum**: filled range bar from 52W Low to High, filled portion colored green (>66%)/amber/red (<33%), percentage label centered on fill, white divider at current price
+- **Vertical separator**: 2px border-left on 52W High column to visually separate Day group from 52W group
 - Tooltip on symbol hover showing full company name (title attribute)
 - Colour-coded bucket tags: blue (#2563eb), purple (#7c3aed), amber (#d97706), green (#059669)
 - Green/red for positive/negative values
@@ -82,23 +84,23 @@ NC-Nifty-Dashboard/
 │   ├── package.json
 │   └── vite.config.js
 ├── DESIGN.md
-├── README.md
-├── SETUP.md
 ├── TEST.md
-└── prompt.txt
+├── SETUP.md
+├── prompt.txt
+└── README.md
 ```
 
 ## Design Documents to Create
 1. **README.md**: Project overview with quick start and feature list
 2. **DESIGN.md**: Architecture diagram (ASCII), tech stack table, data source details, API endpoints, component descriptions, performance notes
 3. **SETUP.md**: Beginner-friendly step-by-step guide covering Python/Node installation, backend/frontend launch, troubleshooting
-4. **TEST.md**: 18 test cases (TC-01 to TC-18) covering API endpoints, filtering, sorting, dark mode, live clock, face value, favourites (add/remove/max 3/persistence), responsive layout
+4. **TEST.md**: 21 test cases (TC-01 to TC-21) covering API endpoints, filtering, sorting, dark mode, live clock, face value, favourites (add/remove/max 3/persistence), 1Y momentum bar, symbol tooltip, vertical column separator, responsive layout
 
 ## Styling
 - Tailwind CSS 4 utility classes
 - CSS custom properties for theming: --bg, --card, --text, --text-secondary, --border, --positive, --negative, --hover
 - Dark mode toggles these variables via .dark class
-- Responsive: cards reflow 5->3->2 columns, table scrolls horizontally with min-w-[1020px]
+- Responsive: cards reflow 5->3->2 columns, table scrolls horizontally with min-w-[1200px]
 
 ## Important Details
 - Backend on port 5000, frontend on port 5173

@@ -45,7 +45,7 @@ A real-time stock dashboard that displays Nifty index data and constituent stock
 | Backend | Python Flask 3 | REST API server |
 | Stock Data | yfinance | Real-time prices, fundamentals |
 | Index Data | NSE India public APIs | Gift Nifty via market status |
-| Constituents | NSE Archive CSVs | Nifty 50/Next 50/Midcap/Smallcap lists |
+| Constituents | NSE Archive CSVs | Nifty 50/Next 50/Midcap/SML lists |
 
 ## 4. Data Sources
 
@@ -56,6 +56,7 @@ A real-time stock dashboard that displays Nifty index data and constituent stock
   - `https://archives.nseindia.com/content/indices/ind_niftymidcap100list.csv`
   - `https://archives.nseindia.com/content/indices/ind_niftysmallcap100list.csv`
 - **Total coverage**: 304 stocks (50 + 54 + 100 + 100)
+- **Bucket labels**: Nifty 50, Nifty Next 50, Nifty Midcap, Nifty SML
 
 ### 4.2 Index Live Prices
 
@@ -64,7 +65,7 @@ A real-time stock dashboard that displays Nifty index data and constituent stock
 | Nifty 50 | `^NSEI` | |
 | Nifty Next 50 | `^NSMIDCP` | Yahoo labels as NIFTY NEXT 50 |
 | Nifty Midcap 100 | `NIFTY_MIDCAP_100.NS` | |
-| Nifty Smallcap 100 | `^CNXSC` | |
+| Nifty SML 100 | `^CNXSC` | |
 | Gift Nifty | NSE Market Status API | Fetched from `nseindia.com/api/marketStatus` |
 
 ### 4.3 Stock-Level Data
@@ -88,10 +89,13 @@ A real-time stock dashboard that displays Nifty index data and constituent stock
 - Color-coded green (positive) / red (negative)
 
 ### 6.2 StockTable
-- **Filters**: Index bucket selector (All / Nifty 50 / Next 50 / Midcap / Smallcap), text search (by symbol or name)
+- **Filters**: Index bucket selector (All / Nifty 50 / Next 50 / Midcap / SML), text search (by symbol or name)
 - **Sorting**: Click any column header to sort ascending/descending
-- **Columns**: Star (favourite), Symbol, Index, Price, Face Value, Day High, Day Low, 52W High, 52W Low, EPS, Div%, P/E, P/B
-- Bucket tags are color-coded: blue (Nifty 50), purple (Next 50), amber (Midcap), green (Smallcap)
+- **Columns**: Star (favourite), Symbol, Index, Price, Face Value (split 2-line header), Day High, Day Low, 52W High, 52W Low, EPS, Div%, P/E, P/B, 1Y Momentum
+- **1Y Momentum**: Filled range bar showing position within 52W range (low→current→high), color-coded green (near high), amber (mid), red (near low), with percentage label
+- **Vertical separator**: 2px line between Day High/Low and 52W High/Low column groups
+- **Symbol tooltip**: Hover shows full company name via `title` attribute
+- Bucket tags are color-coded: blue (Nifty 50), purple (Next 50), amber (Midcap), green (SML)
 - **Favourites**: Up to 3 starred stocks pinned at top regardless of filter/search, FIFO eviction, localStorage persistence
 
 ### 6.3 Header Clock
@@ -135,5 +139,7 @@ NC-Nifty-Dashboard/
 │   └── vite.config.js       # Vite config with proxy
 ├── DESIGN.md                 # This document
 ├── TEST.md                   # Test document
+├── SETUP.md                  # Beginner setup guide
+├── prompt.txt                # AI generation prompt
 └── README.md                 # Project overview
 ```
