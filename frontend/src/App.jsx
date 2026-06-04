@@ -123,7 +123,7 @@ export default function App() {
         <StockTable stocks={stocks} loading={loading} starred={starred} onToggleStar={toggleStar} />
 
         <footer className="mt-8 pt-6 border-t text-center text-xs leading-relaxed" style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)' }}>
-          <p>Built with opencode (big-pickle) using Anthropic Claude.</p>
+          <p>Built using opencode with free-to-use AI Model &quot;Big Pickle&quot; which is available through the OpenCode Zen platform.</p>
           <p className="mt-1">React 18, Vite 5, Tailwind CSS 4, Python Flask 3, yfinance, NSE India APIs.</p>
         </footer>
       </div>
