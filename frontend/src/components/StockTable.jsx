@@ -59,6 +59,26 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
     return <span className="ml-1">{sortDir === 'asc' ? '&#8593;' : '&#8595;'}</span>
   }
 
+  const MomentumBar = ({ low, high, price }) => {
+    if (low == null || high == null || price == null || high === low) return <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>--</span>
+    const pct = Math.max(0, Math.min(100, ((price - low) / (high - low)) * 100))
+    const color = pct > 66 ? 'var(--positive)' : pct < 33 ? 'var(--negative)' : '#f59e0b'
+    return (
+      <div className="flex items-center gap-1.5" style={{ minWidth: 100 }}>
+        <span className="text-xs tabular-nums" style={{ color: 'var(--text-secondary)', width: 40, textAlign: 'right' }}>{fmtInt(low)}</span>
+        <div className="flex-1 relative" style={{ height: 6, backgroundColor: 'var(--border)', borderRadius: 3, position: 'relative' }}>
+          <div style={{
+            position: 'absolute', left: `${pct}%`, top: '50%', transform: 'translate(-50%, -50%)',
+            width: 10, height: 10, borderRadius: '50%', backgroundColor: color,
+            boxShadow: '0 0 0 1.5px var(--card)',
+            transition: 'left 0.3s',
+          }} />
+        </div>
+        <span className="text-xs tabular-nums" style={{ color: 'var(--text-secondary)', width: 40 }}>{fmtInt(high)}</span>
+      </div>
+    )
+  }
+
   const thClass =
     'px-3 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer select-none whitespace-nowrap'
   const tdClass = 'px-3 py-2.5 text-sm whitespace-nowrap border-t'
@@ -109,6 +129,7 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
       <td className={tdClass}>{s.dividendYield != null ? `${s.dividendYield}%` : '--'}</td>
       <td className={tdClass}>{fmt(s.peRatio)}</td>
       <td className={tdClass}>{fmt(s.pbRatio)}</td>
+      <td className={tdClass}><MomentumBar low={s.week52Low} high={s.week52High} price={s.currentPrice} /></td>
     </tr>
   )
 
@@ -161,7 +182,7 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
             &#9733; Favourites ({favouriteStocks.length}/3)
           </div>
         )}
-        <table className="w-full min-w-[1020px]">
+        <table className="w-full min-w-[1160px]">
           <thead
             style={{
               backgroundColor: 'var(--card)',
@@ -206,6 +227,9 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
               <th className={thClass} onClick={() => handleSort('pbRatio')}>
                 P/B <SortIcon col="pbRatio" />
               </th>
+              <th className={thClass}>
+                1Y Momentum
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -213,7 +237,7 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
             {favouriteStocks.length > 0 && (
               <tr>
                 <td
-                  colSpan={13}
+                  colSpan={14}
                   style={{
                     padding: '4px 16px',
                     fontSize: 11,
@@ -229,13 +253,13 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
             )}
             {loading ? (
               <tr>
-                <td colSpan={13} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
+                <td colSpan={14} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
                   Loading stock data...
                 </td>
               </tr>
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={13} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
+                <td colSpan={14} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
                   No stocks found.
                 </td>
               </tr>
