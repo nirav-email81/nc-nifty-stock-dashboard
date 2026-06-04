@@ -132,10 +132,16 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
       </td>
       <td className={tdClass} style={{ fontWeight: 600 }}>{fmt(s.currentPrice)}</td>
       <td className={tdClass}>{s.faceValue != null ? fmtInt(s.faceValue) : '--'}</td>
-      <td className={tdClass} style={{ color: 'var(--positive)' }}>{fmt(s.dayHigh)}</td>
-      <td className={tdClass} style={{ color: 'var(--negative)' }}>{fmt(s.dayLow)}</td>
-      <td className={tdClass} style={{ borderLeft: '2px solid var(--border)' }}>{fmt(s.week52High)}</td>
-      <td className={tdClass}>{fmt(s.week52Low)}</td>
+      <td className={tdClass}>
+        <span style={{ color: 'var(--positive)' }}>{fmt(s.dayHigh)}</span>
+        <span className="mx-1" style={{ color: 'var(--text-secondary)' }}>-</span>
+        <span style={{ color: 'var(--negative)' }}>{fmt(s.dayLow)}</span>
+      </td>
+      <td className={tdClass}>
+        <span>{fmt(s.week52High)}</span>
+        <span className="mx-1" style={{ color: 'var(--text-secondary)' }}>-</span>
+        <span>{fmt(s.week52Low)}</span>
+      </td>
       <td className={tdClass}>{fmt(s.eps)}</td>
       <td className={tdClass}>{s.dividendYield != null ? `${s.dividendYield}%` : '--'}</td>
       <td className={tdClass}>{fmt(s.peRatio)}</td>
@@ -193,7 +199,7 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
             &#9733; Favourites ({favouriteStocks.length}/3)
           </div>
         )}
-        <table className="w-full min-w-[1200px]">
+        <table className="w-full min-w-[1050px]">
           <thead
             style={{
               backgroundColor: 'var(--card)',
@@ -215,16 +221,10 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
                 Face<br />Value <SortIcon col="faceValue" />
               </th>
               <th className={thClass} onClick={() => handleSort('dayHigh')}>
-                Day High <SortIcon col="dayHigh" />
+                Intraday H/L <SortIcon col="dayHigh" />
               </th>
-              <th className={thClass} onClick={() => handleSort('dayLow')}>
-                Day Low <SortIcon col="dayLow" />
-              </th>
-              <th className={thClass} onClick={() => handleSort('week52High')} style={{ borderLeft: '2px solid var(--border)' }}>
-                52W High <SortIcon col="week52High" />
-              </th>
-              <th className={thClass} onClick={() => handleSort('week52Low')}>
-                52W Low <SortIcon col="week52Low" />
+              <th className={thClass} onClick={() => handleSort('week52High')}>
+                52W H/L <SortIcon col="week52High" />
               </th>
               <th className={thClass} onClick={() => handleSort('eps')}>
                 EPS <SortIcon col="eps" />
@@ -248,7 +248,7 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
             {favouriteStocks.length > 0 && (
               <tr>
                 <td
-                  colSpan={14}
+                  colSpan={12}
                   style={{
                     padding: '4px 16px',
                     fontSize: 11,
@@ -264,13 +264,13 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
             )}
             {loading ? (
               <tr>
-                <td colSpan={14} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
+                <td colSpan={12} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
                   Loading stock data...
                 </td>
               </tr>
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={14} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
+                <td colSpan={12} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
                   No stocks found.
                 </td>
               </tr>
