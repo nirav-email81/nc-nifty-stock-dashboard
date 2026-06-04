@@ -64,8 +64,7 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
     const pct = Math.max(0, Math.min(100, ((price - low) / (high - low)) * 100))
     const color = pct > 66 ? 'var(--positive)' : pct < 33 ? 'var(--negative)' : '#f59e0b'
     return (
-      <div className="flex items-center gap-2" style={{ minWidth: 120 }}>
-        <span className="text-xs tabular-nums" style={{ color: 'var(--text-secondary)', width: 36, textAlign: 'right', flexShrink: 0 }}>{fmtInt(low)}</span>
+      <div className="flex items-center" style={{ minWidth: 80 }}>
         <div className="flex-1 relative" style={{ height: 14, backgroundColor: 'var(--border)', borderRadius: 7, position: 'relative', overflow: 'hidden' }}>
           <div style={{
             width: `${pct}%`, height: '100%',
@@ -85,7 +84,6 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
             whiteSpace: 'nowrap',
           }}>{pct >= 15 ? `${Math.round(pct)}%` : ''}</span>
         </div>
-        <span className="text-xs tabular-nums" style={{ color: 'var(--text-secondary)', width: 36, flexShrink: 0 }}>{fmtInt(high)}</span>
       </div>
     )
   }
