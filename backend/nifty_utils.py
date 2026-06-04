@@ -4,6 +4,7 @@ import requests
 import csv
 import time
 from io import StringIO
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 CSV_URLS = {
     "Nifty 50": "https://archives.nseindia.com/content/indices/ind_nifty50list.csv",
@@ -148,8 +149,14 @@ def fetch_all_prices(symbols, batch_size=50):
                 high = data[yfsym]["High"]
                 low = data[yfsym]["Low"]
                 if not close.empty and not pd.isna(close.iloc[-1]):
+                    cp = round(float(close.iloc[-1]), 2)
+                    chg = None
+                    if len(close) >= 2 and not pd.isna(close.iloc[-2]):
+                        prev = float(close.iloc[-2])
+                        chg = round(((cp - prev) / prev) * 100, 2)
                     entry = {
-                        "currentPrice": round(float(close.iloc[-1]), 2),
+                        "currentPrice": cp,
+                        "changePercent": chg,
                         "dayHigh": round(float(high.iloc[-1]), 2) if not high.empty and not pd.isna(high.iloc[-1]) else None,
                         "dayLow": round(float(low.iloc[-1]), 2) if not low.empty and not pd.isna(low.iloc[-1]) else None,
                     }
@@ -159,29 +166,35 @@ def fetch_all_prices(symbols, batch_size=50):
         time.sleep(0.5)
     return results
 
+def _fetch_one_fundamental(sym):
+    try:
+        ticker = yf.Ticker(f"{sym}.NS")
+        info = ticker.info
+        result = {
+            "week52High": info.get("fiftyTwoWeekHigh"),
+            "week52Low": info.get("fiftyTwoWeekLow"),
+            "eps": info.get("trailingEps") or info.get("forwardEps"),
+            "dividendYield": info.get("dividendYield"),
+            "peRatio": info.get("trailingPE") or info.get("forwardPE"),
+            "pbRatio": info.get("priceToBook"),
+            "name": info.get("longName") or info.get("shortName") or sym,
+        }
+        if result["dividendYield"] is not None:
+            result["dividendYield"] = round(float(result["dividendYield"]), 2)
+        for key in ["week52High", "week52Low", "eps", "peRatio", "pbRatio"]:
+            if result.get(key) is not None:
+                result[key] = round(float(result[key]), 2)
+        return sym, result
+    except Exception:
+        return sym, {"name": sym}
+
 def fetch_fundamentals(symbols):
     results = {}
-    for sym in symbols:
-        try:
-            ticker = yf.Ticker(f"{sym}.NS")
-            info = ticker.info
-            results[sym] = {
-                "week52High": info.get("fiftyTwoWeekHigh"),
-                "week52Low": info.get("fiftyTwoWeekLow"),
-                "eps": info.get("trailingEps") or info.get("forwardEps"),
-                "dividendYield": info.get("dividendYield"),
-                "peRatio": info.get("trailingPE") or info.get("forwardPE"),
-                "pbRatio": info.get("priceToBook"),
-                "name": info.get("longName") or info.get("shortName") or sym,
-            }
-            if results[sym]["dividendYield"] is not None:
-                results[sym]["dividendYield"] = round(float(results[sym]["dividendYield"]), 2)
-            for key in ["week52High", "week52Low", "eps", "peRatio", "pbRatio"]:
-                if results[sym].get(key) is not None:
-                    results[sym][key] = round(float(results[sym][key]), 2)
-        except Exception:
-            results[sym] = {"name": sym}
-        time.sleep(0.3)
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = {executor.submit(_fetch_one_fundamental, sym): sym for sym in symbols}
+        for future in as_completed(futures):
+            sym, data = future.result()
+            results[sym] = data
     return results
 
 def merge_stock_data(price_data, fund_data, bucket_map, face_value_map=None):
@@ -195,6 +208,7 @@ def merge_stock_data(price_data, fund_data, bucket_map, face_value_map=None):
             "name": f.get("name", sym),
             "bucket": bucket_map.get(sym, "Nifty 500"),
             "currentPrice": p.get("currentPrice"),
+            "changePercent": p.get("changePercent"),
             "dayHigh": p.get("dayHigh"),
             "dayLow": p.get("dayLow"),
             "week52High": f.get("week52High"),

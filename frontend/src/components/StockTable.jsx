@@ -7,6 +7,7 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
   const [search, setSearch] = useState('')
   const [sortKey, setSortKey] = useState('symbol')
   const [sortDir, setSortDir] = useState('asc')
+  const [detailStock, setDetailStock] = useState(null)
 
   const handleSort = (key) => {
     if (sortKey === key) {
@@ -110,12 +111,15 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
       key={s.symbol}
       className="transition-colors"
       style={{
-        backgroundColor: isFav
-          ? 'color-mix(in srgb, var(--positive) 8%, var(--card))'
-          : i % 2 === 0
-            ? 'var(--card)'
-            : 'var(--hover)',
-        borderBottom: '1px solid var(--border)',
+        cursor: 'pointer',
+        backgroundColor: isFav ? 'color-mix(in srgb, var(--positive) 8%, var(--card))' : i % 2 === 0 ? 'var(--card)' : 'var(--hover)',
+      }}
+      onClick={() => setDetailStock(s)}
+      onMouseEnter={(e) => {
+        if (!isFav) e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--border) 30%, var(--card))'
+      }}
+      onMouseLeave={(e) => {
+        if (!isFav) e.currentTarget.style.backgroundColor = i % 2 === 0 ? 'var(--card)' : 'var(--hover)'
       }}
     >
       <StarCell sym={s.symbol} />
@@ -129,6 +133,9 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
         </span>
       </td>
       <td className={tdClass} style={{ fontWeight: 600 }}>{fmt(s.currentPrice)}</td>
+      <td className={tdClass} style={{ color: s.changePercent >= 0 ? 'var(--positive)' : 'var(--negative)' }}>
+        {s.changePercent != null ? `${s.changePercent >= 0 ? '+' : ''}${fmt(s.changePercent)}%` : '--'}
+      </td>
       <td className={tdClass}>{s.faceValue != null ? fmtInt(s.faceValue) : '--'}</td>
       <td className={tdClass}>
         <span style={{ color: 'var(--positive)' }}>{fmt(s.dayHigh)}</span>
@@ -197,7 +204,7 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
             &#9733; Favourites ({favouriteStocks.length}/3)
           </div>
         )}
-        <table className="w-full min-w-[1050px]">
+        <table className="w-full min-w-[1120px]">
           <thead
             style={{
               backgroundColor: 'var(--card)',
@@ -214,6 +221,9 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
               </th>
               <th className={thClass} onClick={() => handleSort('currentPrice')}>
                 Price <SortIcon col="currentPrice" />
+              </th>
+              <th className={thClass} onClick={() => handleSort('changePercent')}>
+                % Change <SortIcon col="changePercent" />
               </th>
               <th className={thClass} onClick={() => handleSort('faceValue')}>
                 Face<br />Value <SortIcon col="faceValue" />
@@ -246,7 +256,7 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
             {favouriteStocks.length > 0 && (
               <tr>
                 <td
-                  colSpan={12}
+                  colSpan={13}
                   style={{
                     padding: '4px 16px',
                     fontSize: 11,
@@ -262,13 +272,13 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
             )}
             {loading ? (
               <tr>
-                <td colSpan={12} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
+                <td colSpan={13} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
                   Loading stock data...
                 </td>
               </tr>
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={12} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
+                <td colSpan={13} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
                   No stocks found.
                 </td>
               </tr>
@@ -278,6 +288,60 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
           </tbody>
         </table>
       </div>
+
+      {detailStock && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          onClick={() => setDetailStock(null)}
+        >
+          <div
+            className="rounded-xl border p-6 w-full max-w-md shadow-2xl"
+            style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', color: 'var(--text)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-bold">{detailStock.name || detailStock.symbol}</h3>
+                <span
+                  className="inline-block px-2 py-0.5 rounded text-xs font-medium mt-1"
+                  style={{ backgroundColor: bucketColor(detailStock.bucket), color: 'white' }}
+                >
+                  {detailStock.symbol} &middot; {detailStock.bucket}
+                </span>
+              </div>
+              <button
+                onClick={() => setDetailStock(null)}
+                className="text-xl leading-none cursor-pointer"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                &times;
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <DetailField label="Price" value={fmt(detailStock.currentPrice)} />
+              <DetailField label="% Change" value={detailStock.changePercent != null ? `${detailStock.changePercent >= 0 ? '+' : ''}${fmt(detailStock.changePercent)}%` : '--'} color={detailStock.changePercent >= 0 ? 'var(--positive)' : 'var(--negative)'} />
+              <DetailField label="Intraday H/L" value={`${fmt(detailStock.dayHigh)} - ${fmt(detailStock.dayLow)}`} />
+              <DetailField label="52W H/L" value={`${fmt(detailStock.week52High)} - ${fmt(detailStock.week52Low)}`} />
+              <DetailField label="Face Value" value={detailStock.faceValue != null ? fmtInt(detailStock.faceValue) : '--'} />
+              <DetailField label="EPS" value={fmt(detailStock.eps)} />
+              <DetailField label="Dividend Yield" value={detailStock.dividendYield != null ? `${detailStock.dividendYield}%` : '--'} />
+              <DetailField label="P/E" value={fmt(detailStock.peRatio)} />
+              <DetailField label="P/B" value={fmt(detailStock.pbRatio)} />
+              <DetailField label="1Y Momentum" value={detailStock.currentPrice != null && detailStock.week52Low != null && detailStock.week52High != null && detailStock.week52High !== detailStock.week52Low ? `${Math.round(((detailStock.currentPrice - detailStock.week52Low) / (detailStock.week52High - detailStock.week52Low)) * 100)}%` : '--'} />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function DetailField({ label, value, color }) {
+  return (
+    <div className="flex flex-col gap-0.5 p-2 rounded" style={{ backgroundColor: 'var(--hover)' }}>
+      <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>{label}</span>
+      <span className="font-semibold" style={{ color: color || 'var(--text)' }}>{value}</span>
     </div>
   )
 }
