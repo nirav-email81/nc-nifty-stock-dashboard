@@ -64,17 +64,28 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
     const pct = Math.max(0, Math.min(100, ((price - low) / (high - low)) * 100))
     const color = pct > 66 ? 'var(--positive)' : pct < 33 ? 'var(--negative)' : '#f59e0b'
     return (
-      <div className="flex items-center gap-1.5" style={{ minWidth: 100 }}>
-        <span className="text-xs tabular-nums" style={{ color: 'var(--text-secondary)', width: 40, textAlign: 'right' }}>{fmtInt(low)}</span>
-        <div className="flex-1 relative" style={{ height: 6, backgroundColor: 'var(--border)', borderRadius: 3, position: 'relative' }}>
+      <div className="flex items-center gap-2" style={{ minWidth: 120 }}>
+        <span className="text-xs tabular-nums" style={{ color: 'var(--text-secondary)', width: 36, textAlign: 'right', flexShrink: 0 }}>{fmtInt(low)}</span>
+        <div className="flex-1 relative" style={{ height: 14, backgroundColor: 'var(--border)', borderRadius: 7, position: 'relative', overflow: 'hidden' }}>
+          <div style={{
+            width: `${pct}%`, height: '100%',
+            backgroundColor: color,
+            borderRadius: 7,
+            transition: 'width 0.4s',
+          }} />
           <div style={{
             position: 'absolute', left: `${pct}%`, top: '50%', transform: 'translate(-50%, -50%)',
-            width: 10, height: 10, borderRadius: '50%', backgroundColor: color,
-            boxShadow: '0 0 0 1.5px var(--card)',
-            transition: 'left 0.3s',
+            width: 1.5, height: '60%', backgroundColor: 'white', borderRadius: 1,
+            boxShadow: '0 0 2px rgba(0,0,0,0.5)',
           }} />
+          <span className="text-[10px] font-bold tabular-nums absolute" style={{
+            left: `${pct / 2}%`, top: '50%', transform: 'translate(-50%, -50%)',
+            color: 'white',
+            textShadow: '0 0 2px rgba(0,0,0,0.3)',
+            whiteSpace: 'nowrap',
+          }}>{pct >= 15 ? `${Math.round(pct)}%` : ''}</span>
         </div>
-        <span className="text-xs tabular-nums" style={{ color: 'var(--text-secondary)', width: 40 }}>{fmtInt(high)}</span>
+        <span className="text-xs tabular-nums" style={{ color: 'var(--text-secondary)', width: 36, flexShrink: 0 }}>{fmtInt(high)}</span>
       </div>
     )
   }
@@ -182,7 +193,7 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
             &#9733; Favourites ({favouriteStocks.length}/3)
           </div>
         )}
-        <table className="w-full min-w-[1160px]">
+        <table className="w-full min-w-[1200px]">
           <thead
             style={{
               backgroundColor: 'var(--card)',
