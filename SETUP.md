@@ -38,9 +38,11 @@ python -m pip install -r requirements.txt
 python app.py
 ```
 
-**Expected output (after ~15-30 seconds):**
+**Expected output (after ~90-120 seconds):**
 ```
 [bg] Fetching indices...
+[bg] Fetching face value map...
+[bg] Got 2375 face values
 [bg] Batch fetching prices for 304 stocks...
 [bg] Fetching fundamentals for 304 stocks...
 [bg] Refresh complete: 304 stocks
@@ -81,8 +83,10 @@ VITE v5.4.21  ready in 2s
 | **View stocks** | Scroll through the table |
 | **Filter by index** | Click "Nifty 50", "Nifty Midcap", etc. |
 | **Search** | Type a stock name or symbol in the search box |
-| **Sort** | Click any column header (Price, PE, etc.) |
+| **Sort** | Click any column header (Price, PE, Face Value, etc.) |
+| **Favourites** | Click the ☆ star on any stock row; up to 3 favourites pinned to top |
 | **Dark mode** | Click the sun/moon icon in the top-right |
+| **Live clock** | View current date and time in the top-right corner |
 | **Auto-refresh** | Data updates every 10 minutes automatically |
 
 ## Troubleshooting
@@ -96,7 +100,7 @@ Install Node.js from https://nodejs.org/ and restart your terminal.
 ### Dashboard shows no data
 1. Make sure the backend terminal is still running
 2. Check port 5000 isn't blocked by a firewall
-3. Wait ~30 seconds for the first data fetch to complete
+3. Wait ~90-120 seconds for the first data fetch to complete
 
 ### "Address already in use" on port 5000
 Another program is using port 5000. Close it or change the port in `backend/app.py`.

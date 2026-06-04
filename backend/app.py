@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from nifty_utils import (
     get_index_prices, build_stock_list, fetch_all_prices,
-    fetch_fundamentals, merge_stock_data
+    fetch_fundamentals, merge_stock_data, fetch_face_value_map
 )
 import threading
 import time
@@ -28,13 +28,17 @@ def refresh_data():
         all_symbols = [s["symbol"] for s in stock_list]
         bucket_map = {s["symbol"]: s["bucket"] for s in stock_list}
 
+        print(f"[bg] Fetching face value map...")
+        face_value_map = fetch_face_value_map()
+        print(f"[bg] Got {len(face_value_map)} face values")
+
         print(f"[bg] Batch fetching prices for {len(all_symbols)} stocks...")
         prices = fetch_all_prices(all_symbols)
 
         print(f"[bg] Fetching fundamentals for {len(all_symbols)} stocks...")
         funds = fetch_fundamentals(all_symbols)
 
-        stocks = merge_stock_data(prices, funds, bucket_map)
+        stocks = merge_stock_data(prices, funds, bucket_map, face_value_map)
 
         with _lock:
             _data["indices"] = indices

@@ -63,7 +63,7 @@ npm run dev
 
 #### TC-07: Stock Table Load
 - **Action**: Wait for Nifty 50 stocks to load
-- **Expected**: Table shows symbol, price, day range, 52-week range, fundamentals
+- **Expected**: Table shows symbol, price, face value, day range, 52-week range, fundamentals
 - **Status**: ✅
 
 #### TC-08: Filter by Bucket
@@ -77,7 +77,7 @@ npm run dev
 - **Status**: ✅
 
 #### TC-10: Column Sorting
-- **Action**: Click column headers (Price, PE, Div%, etc.)
+- **Action**: Click column headers (Price, PE, Face Value, Div%, etc.)
 - **Expected**: Table sorts ascending/descending, sort indicator shown
 - **Status**: ✅
 
@@ -86,16 +86,47 @@ npm run dev
 - **Expected**: Page theme toggles between light and dark
 - **Status**: ✅
 
-#### TC-12: Responsive Layout
+#### TC-12: Live Header Clock
+- **Action**: Observe top-right corner of header
+- **Expected**: Live timestamp (date + time) displayed, updating every second
+- **Status**: ✅
+
+#### TC-13: Face Value Column
+- **Action**: Scroll stock table horizontally
+- **Expected**: "Face Value" column visible after Price, showing integer values (e.g. ₹10, ₹5, ₹1)
+- **Status**: ✅
+
+#### TC-14: Add to Favourites
+- **Action**: Click the ☆ (hollow star) on any stock row
+- **Expected**: Star fills (★), stock appears in green "Favourites" section at top of table
+- **Status**: ✅
+
+#### TC-15: Remove from Favourites
+- **Action**: Click the ★ (filled star) on a favourite stock
+- **Expected**: Star returns to ☆, stock removed from Favourites section
+- **Status**: ✅
+
+#### TC-16: Favourites Max 3 with FIFO
+- **Action**: Star 4 different stocks
+- **Expected**: Only 3 favourites shown; the 1st starred stock is automatically evicted
+- **Status**: ✅
+
+#### TC-17: Favourites Persistence
+- **Action**: Star a stock, then refresh the page (F5)
+- **Expected**: Starred stock remains in Favourites section after reload
+- **Status**: ✅
+
+#### TC-18: Responsive Layout
 - **Action**: Resize browser window
 - **Expected**: Cards reflow (5→3→2 columns), table scrolls horizontally
 - **Status**: ✅
 
 ## 4. Known Issues / Limitations
-- **Yahoo Finance rate limiting**: Fetching all 304 stocks may take 60-120s on first load due to API rate limits. Subsequent requests use cache.
+- **Yahoo Finance rate limiting**: Fetching all 304 stocks may take 90-120s on first load due to API rate limits. Subsequent refreshes use a fresh cache.
 - **Gift Nifty data**: Fetched from NSE Market Status API (may not work during non-market hours for some values, but last price is generally available).
 - **Market hours**: Most up-to-date data available when Indian markets are open (Mon-Fri 9:15 AM - 3:30 PM IST).
 - **NSE Archive CSVs**: Constituent lists are semi-static; NSE updates them quarterly. They may not reflect intra-quarter changes.
+- **Face Value source**: Fetched from NSE Securities CSV (`EQUITY_L.csv`); covers all NSE-listed stocks, refreshed every 10 minutes alongside other data.
 
 ## 5. Browser Compatibility
 - Chrome 90+ ✅

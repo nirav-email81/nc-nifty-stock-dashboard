@@ -5,7 +5,9 @@ Real-time stock dashboard for Nifty 50, Nifty Next 50, Nifty Midcap 100, and Nif
 ## Features
 - Live index prices: Gift Nifty, Nifty 50, Next 50, Midcap 100, Smallcap 100
 - Stock table with 304 Nifty stocks, filterable by index bucket and searchable by name/symbol
-- Sortable columns: Price, Day High/Low, 52W High/Low, EPS, Div%, P/E, P/B
+- Sortable columns: Price, Face Value, Day High/Low, 52W High/Low, EPS, Div%, P/E, P/B
+- Favourites: up to 3 starred stocks pinned to top, persistence via localStorage
+- Live header clock with date and time
 - Dark mode toggle
 - Responsive design
 

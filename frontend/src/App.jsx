@@ -18,7 +18,25 @@ export default function App() {
   const [error, setError] = useState('')
   const [lastRefresh, setLastRefresh] = useState(new Date())
   const [nextIn, setNextIn] = useState(600)
+  const [clock, setClock] = useState(new Date())
+  const [starred, setStarred] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('nc_starred') || '[]') }
+    catch { return [] }
+  })
   const timerRef = useRef(null)
+
+  const toggleStar = (symbol) => {
+    setStarred((prev) => {
+      let next
+      if (prev.includes(symbol)) {
+        next = prev.filter((s) => s !== symbol)
+      } else {
+        next = prev.length >= 3 ? [...prev.slice(1), symbol] : [...prev, symbol]
+      }
+      localStorage.setItem('nc_starred', JSON.stringify(next))
+      return next
+    })
+  }
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
@@ -52,6 +70,11 @@ export default function App() {
     return () => clearInterval(interval)
   }, [])
 
+  useEffect(() => {
+    const interval = setInterval(() => setClock(new Date()), 1000)
+    return () => clearInterval(interval)
+  }, [])
+
   const formatTime = (s) => {
     const m = Math.floor(s / 60)
     const sec = s % 60
@@ -73,6 +96,10 @@ export default function App() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <span className="text-sm tabular-nums" style={{ color: 'var(--text-secondary)', fontVariantNumeric: 'tabular-nums' }}>
+              {clock.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}{' '}
+              {clock.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })}
+            </span>
             {error && (
               <span className="text-sm" style={{ color: 'var(--negative)' }}>{error}</span>
             )}
@@ -93,7 +120,7 @@ export default function App() {
 
         <IndexCards indices={indices} />
 
-        <StockTable stocks={stocks} loading={loading} />
+        <StockTable stocks={stocks} loading={loading} starred={starred} onToggleStar={toggleStar} />
       </div>
     </div>
   )

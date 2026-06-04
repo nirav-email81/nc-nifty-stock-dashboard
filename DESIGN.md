@@ -68,8 +68,10 @@ A real-time stock dashboard that displays Nifty index data and constituent stock
 | Gift Nifty | NSE Market Status API | Fetched from `nseindia.com/api/marketStatus` |
 
 ### 4.3 Stock-Level Data
-- **Source**: yfinance (Yahoo Finance)
-- **Fields**: currentPrice, dayHigh, dayLow, fiftyTwoWeekHigh, fiftyTwoWeekLow, trailingEps, dividendYield, trailingPE, priceToBook
+- **Sources**:
+  - **yfinance (Yahoo Finance)**: currentPrice, dayHigh, dayLow, fiftyTwoWeekHigh, fiftyTwoWeekLow, trailingEps, dividendYield, trailingPE, priceToBook
+  - **NSE Securities CSV**: faceValue (from `EQUITY_L.csv`, 2375+ stocks with face values like ₹10, ₹5, ₹2, ₹1)
+- **Fields**: currentPrice, dayHigh, dayLow, fiftyTwoWeekHigh, fiftyTwoWeekLow, trailingEps, dividendYield, trailingPE, priceToBook, faceValue
 
 ## 5. API Endpoints
 
@@ -88,19 +90,27 @@ A real-time stock dashboard that displays Nifty index data and constituent stock
 ### 6.2 StockTable
 - **Filters**: Index bucket selector (All / Nifty 50 / Next 50 / Midcap / Smallcap), text search (by symbol or name)
 - **Sorting**: Click any column header to sort ascending/descending
-- **Columns**: Symbol, Index bucket, Price, Day High, Day Low, 52W High, 52W Low, EPS, Div%, P/E, P/B
+- **Columns**: Star (favourite), Symbol, Index, Price, Face Value, Day High, Day Low, 52W High, 52W Low, EPS, Div%, P/E, P/B
 - Bucket tags are color-coded: blue (Nifty 50), purple (Next 50), amber (Midcap), green (Smallcap)
+- **Favourites**: Up to 3 starred stocks pinned at top regardless of filter/search, FIFO eviction, localStorage persistence
 
-### 6.3 Dark Mode
+### 6.3 Header Clock
+- Live timestamp displayed top-right, left of dark mode toggle
+- Updates every second
+- Shows date (dd MMM yyyy) and time (HH:MM:SS AM/PM IST)
+
+### 6.4 Dark Mode
 - Toggle button in the header
 - Respects system preference on first load
 - Uses CSS custom properties for theming
 
 ## 7. Performance
-- In-memory cache with 120s TTL for stock data
-- 30s TTL for index prices
-- Concurrent fetching with 3 worker threads
-- Random delays (300-800ms) between yfinance requests to avoid rate limiting
+- Background thread refreshes all data every 600s (10 minutes)
+- Batch price fetch via `yfinance.download()` for 6 batches of ~50 stocks (~15s total)
+- Individual fundamental fetches via `yfinance.Ticker.info` with 300ms delay between calls (~90s total)
+- NSE Securities CSV fetched once per refresh for face values (~3s)
+- Initial load completes in ~90-120s; subsequent refreshes use a fresh cache
+- In-memory cache served immediately to frontend; background thread updates in-place
 
 ## 8. Project Structure
 

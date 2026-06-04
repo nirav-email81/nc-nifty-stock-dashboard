@@ -56,6 +56,29 @@ def fetch_csv_symbols(url):
     reader = csv.DictReader(StringIO(resp.text))
     return [row["Symbol"] for row in reader]
 
+SECURITIES_CSV = "https://archives.nseindia.com/content/equities/EQUITY_L.csv"
+
+def fetch_face_value_map():
+    try:
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        resp = requests.get(SECURITIES_CSV, headers=headers, timeout=15)
+        resp.raise_for_status()
+        content = resp.text
+        reader = csv.DictReader(StringIO(content))
+        reader.fieldnames = [name.strip() for name in reader.fieldnames]
+        face_map = {}
+        for row in reader:
+            sym = row.get("SYMBOL", "").strip()
+            fv = row.get("FACE VALUE", "").strip()
+            if sym and fv:
+                try:
+                    face_map[sym] = float(fv)
+                except ValueError:
+                    pass
+        return face_map
+    except Exception:
+        return {}
+
 def get_all_stocks():
     stocks = {}
     for bucket_name, url in CSV_URLS.items():
@@ -161,11 +184,12 @@ def fetch_fundamentals(symbols):
         time.sleep(0.3)
     return results
 
-def merge_stock_data(price_data, fund_data, bucket_map):
+def merge_stock_data(price_data, fund_data, bucket_map, face_value_map=None):
     stocks = []
     for sym in sorted(bucket_map.keys()):
         p = price_data.get(sym, {})
         f = fund_data.get(sym, {})
+        face_val = face_value_map.get(sym) if face_value_map else None
         stocks.append({
             "symbol": sym,
             "name": f.get("name", sym),
@@ -179,5 +203,6 @@ def merge_stock_data(price_data, fund_data, bucket_map):
             "dividendYield": f.get("dividendYield"),
             "peRatio": f.get("peRatio"),
             "pbRatio": f.get("pbRatio"),
+            "faceValue": face_val,
         })
     return stocks
