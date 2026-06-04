@@ -90,7 +90,7 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
       }}
     >
       <StarCell sym={s.symbol} />
-      <td className={tdClass} style={{ fontWeight: 600 }}>{s.symbol}</td>
+      <td className={tdClass} style={{ fontWeight: 600 }} title={s.name || s.symbol}>{s.symbol}</td>
       <td className={tdClass} style={{ color: 'var(--text-secondary)' }}>
         <span
           className="inline-block px-2 py-0.5 rounded text-xs font-medium"
