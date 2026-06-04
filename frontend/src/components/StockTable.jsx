@@ -201,7 +201,7 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
                 Price <SortIcon col="currentPrice" />
               </th>
               <th className={thClass} onClick={() => handleSort('faceValue')}>
-                Face Value <SortIcon col="faceValue" />
+                Face<br />Value <SortIcon col="faceValue" />
               </th>
               <th className={thClass} onClick={() => handleSort('dayHigh')}>
                 Day High <SortIcon col="dayHigh" />
