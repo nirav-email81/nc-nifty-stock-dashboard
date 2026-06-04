@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react'
 
-const BUCKETS = ['All', 'Nifty 50', 'Nifty Next 50', 'Nifty Midcap', 'Nifty Smallcap']
+const BUCKETS = ['All', 'Nifty 50', 'Nifty Next 50', 'Nifty Midcap', 'Nifty SML']
 
 export default function StockTable({ stocks, loading, starred, onToggleStar }) {
   const [bucket, setBucket] = useState('All')
@@ -299,7 +299,7 @@ function bucketColor(b) {
     case 'Nifty 50': return '#2563eb'
     case 'Nifty Next 50': return '#7c3aed'
     case 'Nifty Midcap': return '#d97706'
-    case 'Nifty Smallcap': return '#059669'
+    case 'Nifty SML': return '#059669'
     default: return '#64748b'
   }
 }

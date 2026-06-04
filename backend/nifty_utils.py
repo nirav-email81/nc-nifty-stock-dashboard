@@ -9,7 +9,7 @@ CSV_URLS = {
     "Nifty 50": "https://archives.nseindia.com/content/indices/ind_nifty50list.csv",
     "Nifty Next 50": "https://archives.nseindia.com/content/indices/ind_niftynext50list.csv",
     "Nifty Midcap": "https://archives.nseindia.com/content/indices/ind_niftymidcap100list.csv",
-    "Nifty Smallcap": "https://archives.nseindia.com/content/indices/ind_niftysmallcap100list.csv",
+    "Nifty SML": "https://archives.nseindia.com/content/indices/ind_niftysmallcap100list.csv",
 }
 
 INDEX_INFO = {
