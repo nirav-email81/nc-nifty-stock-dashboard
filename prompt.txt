@@ -1,0 +1,111 @@
+Build a real-time Nifty Stock Dashboard web application with a React + Vite frontend and a Python Flask backend.
+
+## Data Sources
+1. **Nifty Constituents**: Fetch from NSE India archive CSVs:
+   - https://archives.nSEIndia.com/content/indices/ind_nifty50list.csv
+   - https://archives.nSEIndia.com/content/indices/ind_niftynext50list.csv
+   - https://archives.nSEIndia.com/content/indices/ind_niftymidcap100list.csv
+   - https://archives.nSEIndia.com/content/indices/ind_niftysmallcap100list.csv
+2. **Index Prices**: Use yfinance for Nifty 50 (^NSEI), Nifty Next 50 (^NSMIDCP), Nifty Midcap 100 (NIFTY_MIDCAP_100.NS), Nifty Smallcap 100 (^CNXSC)
+3. **Gift Nifty**: Fetch from https://www.NSEIndia.com/api/marketStatus
+4. **Stock Prices**: Batch download via yfinance.download() in batches of ~50 with .NS suffix
+5. **Fundamentals**: Fetch per-stock via yfinance.Ticker.info for PE, PB, EPS, Div%, 52W High/Low, company name
+6. **Face Value**: Fetch from https://archives.nSEIndia.com/content/equities/EQUITY_L.csv (column "FACE VALUE")
+
+## Backend (Python Flask)
+- app.py with routes /api/indices, /api/stocks (supports ?bucket= and ?search= query params), /api/status
+- Background thread refreshes all data every 600 seconds
+- In-memory cache dict accessed via thread lock
+- CORS enabled
+- nifty_utils.py with functions: fetch_face_value_map(), get_gift_nifty(), get_index_prices(), fetch_all_prices(), fetch_fundamentals(), merge_stock_data()
+- Seed delays: 0.3s between individual yfinance calls, 0.5s between batch downloads
+- requirements.txt: flask, flask-cors, yfinance, pandas, requests
+
+## Frontend (React + Vite + Tailwind CSS 4)
+- Vite config proxies /api to http://localhost:5000
+- API client using axios in api.js
+- Dark mode via CSS custom properties and Tailwind dark class on <html>
+- Respects prefers-color-scheme on first load
+- Auto-polls backend every 600 seconds with countdown timer
+
+### Components
+1. **App.jsx**: Manages state (indices, stocks, dark mode, starred, clock, loading, error), polling intervals, localStorage for favourites
+2. **IndexCards.jsx**: 5 cards in responsive grid showing Gift Nifty, Nifty 50, Next 50, Midcap 100, Smallcap 100 with price, change, changePercent
+3. **StockTable.jsx**: All features below
+
+### StockTable Features
+- Bucket filter pills: All, Nifty 50, Nifty Next 50, Nifty Midcap, Nifty Smallcap
+- Text search box filtering by symbol or name
+- Sortable columns with asc/desc toggle on click
+- Columns in order: Star, Symbol, Index, Price, Face Value, Day High, Day Low, 52W High, 52W Low, EPS, Div%, P/E, P/B
+- Tooltip on symbol hover showing full company name (title attribute)
+- Colour-coded bucket tags: blue (#2563eb), purple (#7c3aed), amber (#d97706), green (#059669)
+- Green/red for positive/negative values
+- Colour-mix green tint for favourite rows
+
+### Favourites System
+- Click ☆/★ to toggle (hollow = not starred, filled = starred)
+- Max 3 favourites; starring a 4th evicts the 1st (FIFO)
+- Favourites section pinned at top of table, visible regardless of bucket filter or search
+- Favourite stocks highlighted with green-tinted background
+- Persisted in localStorage under key "nc_starred"
+
+### Header
+- Title "NC Nifty Stock Dashboard" on left
+- "Updated: HH:MM:SS" and "Next: M:SS" countdown below title
+- Live clock (dd Mmm yyyy, HH:MM:SS AM/PM) top-right with tabular-nums
+- Dark mode toggle button (sun/moon emoji) right of clock
+- Error message shown between clock and toggle if fetch fails
+
+### Footer
+- First line: "Built with opencode (big-pickle) using Anthropic Claude."
+- Second line: "React 18, Vite 5, Tailwind CSS 4, Python Flask 3, yfinance, NSE India APIs."
+
+## Project Structure
+```
+NC-Nifty-Dashboard/
+├── backend/
+│   ├── app.py
+│   ├── nifty_utils.py
+│   └── requirements.txt
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── api.js
+│   │   ├── index.css
+│   │   ├── main.jsx
+│   │   └── components/
+│   │       ├── IndexCards.jsx
+│   │       └── StockTable.jsx
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
+├── DESIGN.md
+├── README.md
+├── SETUP.md
+├── TEST.md
+└── prompt.txt
+```
+
+## Design Documents to Create
+1. **README.md**: Project overview with quick start and feature list
+2. **DESIGN.md**: Architecture diagram (ASCII), tech stack table, data source details, API endpoints, component descriptions, performance notes
+3. **SETUP.md**: Beginner-friendly step-by-step guide covering Python/Node installation, backend/frontend launch, troubleshooting
+4. **TEST.md**: 18 test cases (TC-01 to TC-18) covering API endpoints, filtering, sorting, dark mode, live clock, face value, favourites (add/remove/max 3/persistence), responsive layout
+
+## Styling
+- Tailwind CSS 4 utility classes
+- CSS custom properties for theming: --bg, --card, --text, --text-secondary, --border, --positive, --negative, --hover
+- Dark mode toggles these variables via .dark class
+- Responsive: cards reflow 5->3->2 columns, table scrolls horizontally with min-w-[1020px]
+
+## Important Details
+- Backend on port 5000, frontend on port 5173
+- 304 stocks total (50 + 54 + 100 + 100)
+- Initial data load takes ~90-120s (background thread; server responds immediately with loading state)
+- Batch yfinance.download() avoids rate limiting (6-12 HTTP calls instead of 304 individual)
+- NSE CSV column names have leading spaces; strip them in DictReader.fieldnames
+- Face value is displayed as integer (no decimals)
+- Number formatting uses en-IN locale
+- Do not add comments to the code
