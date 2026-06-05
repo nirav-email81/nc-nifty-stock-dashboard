@@ -136,7 +136,6 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
       <td className={tdClass} style={{ color: s.changePercent >= 0 ? 'var(--positive)' : 'var(--negative)' }}>
         {s.changePercent != null ? `${s.changePercent >= 0 ? '+' : ''}${fmt(s.changePercent)}%` : '--'}
       </td>
-      <td className={tdClass}>{s.faceValue != null ? fmtInt(s.faceValue) : '--'}</td>
       <td className={tdClass}>
         <span style={{ color: 'var(--positive)' }}>{fmt(s.dayHigh)}</span>
         <span className="mx-1" style={{ color: 'var(--text-secondary)' }}>-</span>
@@ -204,7 +203,7 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
             &#9733; Favourites ({favouriteStocks.length}/3)
           </div>
         )}
-        <table className="w-full min-w-[1120px]">
+        <table className="w-full min-w-[1050px]">
           <thead
             style={{
               backgroundColor: 'var(--card)',
@@ -225,9 +224,7 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
               <th className={thClass} onClick={() => handleSort('changePercent')}>
                 % Change <SortIcon col="changePercent" />
               </th>
-              <th className={thClass} onClick={() => handleSort('faceValue')}>
-                Face<br />Value <SortIcon col="faceValue" />
-              </th>
+
               <th className={thClass} onClick={() => handleSort('dayHigh')}>
                 Intraday H/L <SortIcon col="dayHigh" />
               </th>
@@ -256,7 +253,7 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
             {favouriteStocks.length > 0 && (
               <tr>
                 <td
-                  colSpan={13}
+                  colSpan={12}
                   style={{
                     padding: '4px 16px',
                     fontSize: 11,
@@ -272,13 +269,13 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
             )}
             {loading ? (
               <tr>
-                <td colSpan={13} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
+                <td colSpan={12} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
                   Loading stock data...
                 </td>
               </tr>
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={13} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
+                <td colSpan={12} className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
                   No stocks found.
                 </td>
               </tr>
