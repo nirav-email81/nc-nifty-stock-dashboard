@@ -13,12 +13,16 @@ CSV_URLS = {
     "Nifty SML": "https://archives.nseindia.com/content/indices/ind_niftysmallcap100list.csv",
 }
 
+GOLD_API_URL = "https://ibja-api.vercel.app/latest"
+
 INDEX_INFO = {
     "Gift Nifty": {"yfinance": None, "nse_api": True},
     "Nifty 50": {"yfinance": "^NSEI"},
     "Nifty Next 50": {"yfinance": "^NSMIDCP"},
     "Nifty Midcap 100": {"yfinance": "NIFTY_MIDCAP_100.NS"},
     "Nifty Smallcap 100": {"yfinance": "^CNXSC"},
+    "USD/INR": {"yfinance": "USDINR=X"},
+    "Gold 24K": {"yfinance": None, "gold_api": True},
 }
 
 _nse_session = None
@@ -55,7 +59,7 @@ def fetch_csv_symbols(url):
     resp = requests.get(url, headers=headers, timeout=15)
     resp.raise_for_status()
     reader = csv.DictReader(StringIO(resp.text))
-    return [row["Symbol"] for row in reader]
+    return [row["Symbol"] for row in reader if not row["Symbol"].startswith("DUMMY")]
 
 SECURITIES_CSV = "https://archives.nseindia.com/content/equities/EQUITY_L.csv"
 
@@ -102,6 +106,19 @@ def build_stock_list():
         result.append({"symbol": sym, "name": "", "bucket": bucket_map.get(sym, "Nifty 500")})
     return result
 
+def get_gold_24k_price():
+    try:
+        resp = requests.get(GOLD_API_URL, timeout=10)
+        if resp.status_code == 200:
+            data = resp.json()
+            price = float(data.get("lblGold999_PM", 0))
+            if price == 0:
+                price = float(data.get("lblGold999_AM", 0))
+            return {"price": price, "change": None, "changePercent": None}
+        return None
+    except Exception:
+        return None
+
 def get_index_prices():
     results = {}
     for name, info in INDEX_INFO.items():
@@ -109,6 +126,10 @@ def get_index_prices():
         if not sym and info.get("nse_api"):
             gift = get_gift_nifty()
             results[name] = gift or {"price": None, "change": None, "changePercent": None}
+            continue
+        if not sym and info.get("gold_api"):
+            gold = get_gold_24k_price()
+            results[name] = gold or {"price": None, "change": None, "changePercent": None}
             continue
         if not sym:
             results[name] = {"price": None, "change": None, "changePercent": None}

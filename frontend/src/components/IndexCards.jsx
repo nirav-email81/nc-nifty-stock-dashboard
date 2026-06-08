@@ -6,11 +6,13 @@ const INDEX_ORDER = [
   'Nifty Next 50',
   'Nifty Midcap 100',
   'Nifty Smallcap 100',
+  'USD/INR',
+  'Gold 24K',
 ]
 
 export default function IndexCards({ indices }) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-6">
       {INDEX_ORDER.map((name) => {
         const idx = indices[name]
         if (!idx || idx.price == null) {
@@ -54,14 +56,16 @@ export default function IndexCards({ indices }) {
                 maximumFractionDigits: 2,
               })}
             </div>
-            <div
-              className="text-sm font-medium mt-1"
-              style={{ color: isPositive ? 'var(--positive)' : 'var(--negative)' }}
-            >
-              {isPositive ? '+' : ''}{idx.change?.toFixed(2)}
-              {' '}
-              ({isPositive ? '+' : ''}{idx.changePercent?.toFixed(2)}%)
-            </div>
+            {idx.change != null && (
+              <div
+                className="text-sm font-medium mt-1"
+                style={{ color: isPositive ? 'var(--positive)' : 'var(--negative)' }}
+              >
+                {isPositive ? '+' : ''}{idx.change.toFixed(2)}
+                {' '}
+                ({isPositive ? '+' : ''}{idx.changePercent?.toFixed(2)}%)
+              </div>
+            )}
           </div>
         )
       })}
