@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-A real-time stock dashboard that displays Nifty index data and constituent stock details. The application fetches live data from NSE India and Yahoo Finance, providing filtering, sorting, and dark mode capabilities.
+A real-time stock dashboard that displays Nifty index data, constituent stock details, USD/INR exchange rate, and 24K gold price. The application fetches live data from NSE India, Yahoo Finance, and IBJA, providing filtering, sorting, and dark mode capabilities.
 
 ## 2. Architecture
 
@@ -11,7 +11,7 @@ A real-time stock dashboard that displays Nifty index data and constituent stock
 │                    Frontend (React + Vite)               │
 │  ┌───────────┐  ┌───────────────┐  ┌──────────────────┐ │
 │  │IndexCards  │  │  StockTable    │  │  Dark Mode       │ │
-│  │(5 indices) │  │  (filterable,  │  │  Toggle          │ │
+│  │(7 tiles)   │  │  (filterable,  │  │  Toggle          │ │
 │  │            │  │   sortable)    │  │                  │ │
 │  └───────────┘  └───────┬───────┘  └──────────────────┘ │
 │                          │                               │
@@ -46,6 +46,8 @@ A real-time stock dashboard that displays Nifty index data and constituent stock
 | Stock Data | yfinance | Real-time prices, fundamentals |
 | Index Data | NSE India public APIs | Gift Nifty via market status |
 | Constituents | NSE Archive CSVs | Nifty 50/Next 50/Midcap/SML lists |
+| Gold (24K) | IBJA API (`ibja-api.vercel.app`) | Benchmark 24K gold price per 10g INR |
+| Forex | yfinance | USD/INR via `USDINR=X` |
 
 ## 4. Data Sources
 
@@ -58,15 +60,17 @@ A real-time stock dashboard that displays Nifty index data and constituent stock
 - **Total coverage**: 304 stocks (50 + 54 + 100 + 100)
 - **Bucket labels**: Nifty 50, Nifty Next 50, Nifty Midcap, Nifty SML
 
-### 4.2 Index Live Prices
+### 4.2 Index / Asset Live Prices
 
-| Index | yfinance Symbol | Notes |
+| Asset | Symbol / Source | Notes |
 |---|---|---|
-| Nifty 50 | `^NSEI` | |
-| Nifty Next 50 | `^NSMIDCP` | Yahoo labels as NIFTY NEXT 50 |
-| Nifty Midcap 100 | `NIFTY_MIDCAP_100.NS` | |
-| Nifty SML 100 | `^CNXSC` | |
+| Nifty 50 | `^NSEI` (yfinance) | |
+| Nifty Next 50 | `^NSMIDCP` (yfinance) | Yahoo labels as NIFTY NEXT 50 |
+| Nifty Midcap 100 | `NIFTY_MIDCAP_100.NS` (yfinance) | |
+| Nifty SML 100 | `^CNXSC` (yfinance) | |
 | Gift Nifty | NSE Market Status API | Fetched from `nseindia.com/api/marketStatus` |
+| Gold 24K | IBJA API (`ibja-api.vercel.app/latest`) | 24K (999 purity) per 10g, INR; uses PM rate, falls back to AM |
+| USD/INR | `USDINR=X` (yfinance) | Live exchange rate |
 
 ### 4.3 Stock-Level Data
 - **Sources**:
@@ -78,15 +82,17 @@ A real-time stock dashboard that displays Nifty index data and constituent stock
 
 | Endpoint | Method | Parameters | Returns |
 |---|---|---|---|
-| `/api/indices` | GET | — | Live prices for all 5 indices |
+| `/api/indices` | GET | — | Live prices for 5 indices + Gold 24K + USD/INR (7 tiles) |
 | `/api/stocks` | GET | `bucket` (optional), `search` (optional) | Stock list with all fields, filterable |
 
 ## 6. Frontend Components
 
 ### 6.1 IndexCards
-- Displays 5 index cards in a responsive grid
-- Each card shows: name, current price, absolute change, percentage change
-- Color-coded green (positive) / red (negative)
+- Displays 7 tiles in a responsive grid (2→3→4→7 columns)
+- Tiles: Gift Nifty, Nifty 50, Next 50, Midcap 100, SML 100, USD/INR, Gold 24K
+- Each card shows: name, source label (where applicable), current price, change, change%
+- Color-coded green (positive) / red (negative); Gold/USD show price only (no change)
+- Gold 24K sourced from IBJA benchmark, USD/INR from Yahoo Finance
 
 ### 6.2 StockTable
 - **Filters**: Index bucket selector (All / Nifty 50 / Next 50 / Midcap / SML), text search (by symbol or name)
@@ -113,6 +119,8 @@ A real-time stock dashboard that displays Nifty index data and constituent stock
 - Batch price fetch via `yfinance.download()` for 6 batches of ~50 stocks (~15s total)
 - Individual fundamental fetches via `yfinance.Ticker.info` with 300ms delay between calls (~90s total)
 - NSE Securities CSV fetched once per refresh for face values (~3s)
+- Gold 24K fetched from IBJA API (~1s), USD/INR from yfinance Ticker (~1s)
+- DUMMY prefix entries filtered from NSE CSV imports to avoid failed fetches
 - Initial load completes in ~90-120s; subsequent refreshes use a fresh cache
 - In-memory cache served immediately to frontend; background thread updates in-place
 

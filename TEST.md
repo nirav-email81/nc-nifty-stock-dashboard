@@ -29,8 +29,8 @@ npm run dev
 
 #### TC-01: Index Prices Endpoint
 - **Action**: `GET /api/indices`
-- **Expected**: JSON with 5 index entries (Gift Nifty, Nifty 50, Next 50, Midcap 100, Nifty SML 100)
-- **Validation**: Each entry has `price`, `change`, `changePercent` fields
+- **Expected**: JSON with 7 entries (Gift Nifty, Nifty 50, Next 50, Midcap 100, Nifty SML 100, USD/INR, Gold 24K)
+- **Validation**: Each entry has `price`; index entries have `change`/`changePercent`; Gold/USD have `null` change
 - **Status**: ✅
 
 #### TC-02: Stocks Endpoint — All Stocks
@@ -56,9 +56,9 @@ npm run dev
 
 ### 3.2 Frontend Tests
 
-#### TC-06: Index Cards Display
+#### TC-06: Index / Asset Tiles Display
 - **Action**: Open `http://localhost:5173`
-- **Expected**: 5 index cards visible at top with prices and change %
+- **Expected**: 7 tiles visible at top — 5 index cards, USD/INR with "via Yahoo Finance" label, Gold 24K with "via IBJA" label
 - **Status**: ✅
 
 #### TC-07: Stock Table Load
@@ -133,7 +133,7 @@ npm run dev
 
 #### TC-21: Responsive Layout
 - **Action**: Resize browser window
-- **Expected**: Cards reflow (5→3→2 columns), table scrolls horizontally
+- **Expected**: Tiles reflow (7→4→3→2 columns), table scrolls horizontally
 - **Status**: ✅
 
 ## 4. Known Issues / Limitations
@@ -142,6 +142,8 @@ npm run dev
 - **Market hours**: Most up-to-date data available when Indian markets are open (Mon-Fri 9:15 AM - 3:30 PM IST).
 - **NSE Archive CSVs**: Constituent lists are semi-static; NSE updates them quarterly. They may not reflect intra-quarter changes.
 - **Face Value source**: Fetched from NSE Securities CSV (`EQUITY_L.csv`); covers all NSE-listed stocks, refreshed every 10 minutes alongside other data.
+- **Gold 24K price**: Sourced from IBJA benchmark (all-India), not Hyderabad-specific retail. Hyderabad retail typically runs ₹1k–₹3k higher than IBJA due to local premiums.
+- **IBJA API**: Third-party hosted on Vercel; subject to availability. Falls back gracefully if unreachable.
 
 ## 5. Browser Compatibility
 - Chrome 90+ ✅

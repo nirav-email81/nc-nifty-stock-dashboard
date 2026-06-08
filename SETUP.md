@@ -71,7 +71,7 @@ VITE v5.4.21  ready in 2s
 - Open your web browser
 - Go to: **http://localhost:5173**
 - You should see:
-  - 5 index cards at the top (Gift Nifty, Nifty 50, etc.)
+  - 7 tiles at the top (Gift Nifty, Nifty 50, Next 50, Midcap 100, SML 100, USD/INR, Gold 24K)
   - A table of stocks with prices, PE ratios, and more
   - Filter buttons (Nifty 50, Next 50, Midcap, SML)
   - A search box to find stocks by name
@@ -112,7 +112,7 @@ Another program is using port 5000. Close it or change the port in `backend/app.
 | `backend/app.py` | The Python server that fetches and serves stock data |
 | `backend/nifty_utils.py` | Stock data fetching logic (NSE + yfinance) |
 | `frontend/src/App.jsx` | Main dashboard page |
-| `frontend/src/components/IndexCards.jsx` | The 5 index price cards |
+| `frontend/src/components/IndexCards.jsx` | The 7 tiles (indices + gold + USD) |
 | `frontend/src/components/StockTable.jsx` | The filterable stock table |
 | `DESIGN.md` | Technical design document |
 | `TEST.md` | How to test the application |

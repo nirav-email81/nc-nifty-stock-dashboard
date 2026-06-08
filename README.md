@@ -3,7 +3,7 @@
 Real-time stock dashboard for Nifty 50, Nifty Next 50, Nifty Midcap 100, and Nifty SML 100 indices.
 
 ## Features
-- Live index prices: Gift Nifty, Nifty 50, Next 50, Midcap 100, Nifty SML 100
+- Live asset tiles: Gift Nifty, Nifty 50, Next 50, Midcap 100, SML 100, **USD/INR**, **Gold 24K** (via IBJA benchmark)
 - Stock table with 304 Nifty stocks, filterable by index bucket (Nifty 50 / Next 50 / Midcap / SML) and searchable by name/symbol
 - Sortable columns: Price, Face Value, Day High/Low, 52W High/Low, EPS, Div%, P/E, P/B, 1Y Momentum
 - **1Y Momentum** — filled range bar showing current price position within 52-week range with percentage
