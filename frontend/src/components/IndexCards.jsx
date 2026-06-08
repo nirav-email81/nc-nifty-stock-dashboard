@@ -10,6 +10,11 @@ const INDEX_ORDER = [
   'Gold 24K',
 ]
 
+const SOURCE = {
+  'Gold 24K': 'via IBJA',
+  'USD/INR': 'via Yahoo Finance',
+}
+
 export default function IndexCards({ indices }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-6">
@@ -47,6 +52,11 @@ export default function IndexCards({ indices }) {
             >
               {name}
             </div>
+            {SOURCE[name] && (
+              <div className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                {SOURCE[name]}
+              </div>
+            )}
             <div
               className="text-2xl font-bold mt-1"
               style={{ color: 'var(--text)' }}
