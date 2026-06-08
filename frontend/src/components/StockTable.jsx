@@ -112,14 +112,16 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
       className="transition-colors"
       style={{
         cursor: 'pointer',
-        backgroundColor: isFav ? 'color-mix(in srgb, var(--positive) 8%, var(--card))' : Math.floor(i / 3) % 2 === 0 ? 'var(--card)' : 'var(--hover)',
+        backgroundColor: isFav ? 'color-mix(in srgb, var(--positive) 8%, var(--card))' : i % 2 === 0 ? 'var(--card)' : 'var(--hover)',
       }}
       onClick={() => setDetailStock(s)}
       onMouseEnter={(e) => {
-        if (!isFav) e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--border) 30%, var(--card))'
+        if (!isFav) e.currentTarget.style.backgroundColor = 'var(--accent)'
+        e.currentTarget.style.opacity = '0.92'
       }}
       onMouseLeave={(e) => {
-        if (!isFav) e.currentTarget.style.backgroundColor = Math.floor(i / 3) % 2 === 0 ? 'var(--card)' : 'var(--hover)'
+        if (!isFav) e.currentTarget.style.backgroundColor = i % 2 === 0 ? 'var(--card)' : 'var(--hover)'
+        e.currentTarget.style.opacity = '1'
       }}
     >
       <StarCell sym={s.symbol} />
