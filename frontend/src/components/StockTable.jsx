@@ -116,12 +116,13 @@ export default function StockTable({ stocks, loading, starred, onToggleStar }) {
       }}
       onClick={() => setDetailStock(s)}
       onMouseEnter={(e) => {
-        if (!isFav) e.currentTarget.style.backgroundColor = 'var(--accent)'
-        e.currentTarget.style.opacity = '0.92'
+        if (!isFav) {
+          const isDark = document.documentElement.classList.contains('dark')
+          e.currentTarget.style.backgroundColor = isDark ? 'color-mix(in srgb, var(--accent) 40%, var(--card))' : 'color-mix(in srgb, var(--accent) 8%, var(--card))'
+        }
       }}
       onMouseLeave={(e) => {
         if (!isFav) e.currentTarget.style.backgroundColor = i % 2 === 0 ? 'var(--card)' : 'var(--hover)'
-        e.currentTarget.style.opacity = '1'
       }}
     >
       <StarCell sym={s.symbol} />
